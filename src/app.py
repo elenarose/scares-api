@@ -1,10 +1,13 @@
 from flask import Flask, request, Response
 from flask_restful import Resource, Api, reqparse
+from datetime import datetime
+from model import *
+
 
 app = Flask(__name__)
 api = Api(app)
 
-#model = #name of model()
+model = state_getter()
 
 class HealthCheck(Resource):
 
@@ -14,24 +17,27 @@ class HealthCheck(Resource):
 class get_data(Resource):
     def __init__(self):
         """
-        what is being returned here
+        This class serves to retrieve a request of a specific user at a specified datetime
         """
         parser = reqparse.RequestParser(bundle_errors=True)
         parser.add_argument('user_id',
                             type=int,
                             required=True,
                             help='We need a user_id to fetch data')
+        parser.add_argument('time',
+                            type=int,
+                            required=True,
+                            help='Time of requested state')
 
         self.parser = parser
 
     def get(self):
         """
-
-        :return:
+        :return: state of user
         """
 
         args = self.parser.parse_args()
-        result = """model.return_requested_data"""
+        result = model.get_state(args.user_id, args.time)
         return result
 
     
