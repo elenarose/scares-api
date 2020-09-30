@@ -1,7 +1,7 @@
 from flask import Flask, request, Response
 from flask_restful import Resource, Api, reqparse
 from datetime import datetime
-from model import *
+from model.model import *
 
 
 app = Flask(__name__)
