@@ -1,6 +1,5 @@
 from flask import Flask, request, Response
 from flask_restful import Resource, Api, reqparse
-from datetime import datetime
 from model.model import *
 
 
