@@ -23,10 +23,11 @@ if __name__ == '__main__':
 
         cur.execute("""
                     CREATE TABLE IF NOT EXISTS raw_data(
-                        user_id INTEGER NOT NULL
-                                REFERENCES users_table (id),
+                        user_id INTEGER NOT NULL,
                         ts TIMESTAMP NOT NULL,
-                        gsr_reading DOUBLE NOT NULL
+                        gsr_reading DOUBLE PRECISION NOT NULL,
+                        CONSTRAINT fk_user_id FOREIGN KEY (user_id)
+                            REFERENCES users_table (id)
                     )
                     """)
 
