@@ -22,3 +22,8 @@ docker run -d \
 
 Then use DataGrip (or your preferred Postgres GUI) to view to the database.
 ![Image of DataGrip Preferences](./datagrip.png)
+
+##### Example of NeuLog API Output:
+	From GetSensorValue:
+	- {"GetSensorValue":[67.3,345]}
+	- if we set value equal to {"GetSensorValue":[67.3,345]}, then we can index each value as value['GetSensorValue'][{0,1}]	

@@ -23,8 +23,8 @@ class get_data(Resource):
                             type=int,
                             required=True,
                             help='We need a user_id to fetch data')
-        parser.add_argument('time',
-                            type=int,
+        parser.add_argument('state',
+                            type=str,
                             required=True,
                             help='Time of requested state')
 
@@ -36,7 +36,7 @@ class get_data(Resource):
         """
 
         args = self.parser.parse_args()
-        result = model.get_state(args.user_id, args.time)
+        result = model.get_state(args.user_id, args.state)
         return result
 
     
