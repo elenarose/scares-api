@@ -39,9 +39,48 @@ class get_data(Resource):
         result = model.get_state(args.user_id, args.time)
         return result
 
-    
+class post_user(Resource):
+    def __init__(self):
+        """
+        Create a new user
+        """
+    def post(self):
+        """
+        create a new user
+        :return: the user
+        """
+        body = request.get_json()
+        return model.create_user(body['username'],body['password'],body['email'])
+
+class post_data(Resource):
+    def __init__(self):
+        """
+        This class serves to retrieve a request of a specific user at a specified datetime
+        """
+        parser = reqparse.RequestParser(bundle_errors=True)
+        parser.add_argument('user_id',
+                            type=int,
+                            required=True,
+                            help='We need to know the user_id of who this data belongs to')
+
+        self.parser = parser
+
+    def post(self):
+        """
+        receive raw data for a user
+        :return: Status 200 if got data okay
+        """
+
+        args = self.parser.parse_args()
+        body = request.get_json()
+
+        model.insert_gsr_values(args.user_id, body['timestamps'], body['gsr_values'])
+        return 'Thank you for your data'
+
 api.add_resource(HealthCheck, '/healthcheck')
 api.add_resource(get_data, '/getdata')
+api.add_resource(post_data, '/data')
+api.add_resource(post_user, '/user')
 
 if __name__ == '__main__':
     app.run(host='localhost', port='8080')
