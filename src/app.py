@@ -76,7 +76,10 @@ class post_data(Resource):
         body = request.get_json()
 
         model.insert_gsr_values(args.user_id, body['timestamps'], body['gsr_values'])
-        send_message('new_data', args.user_id)
+
+        message_body = {'user_id': args.user_id, 'ts': body['timestamps'][0]} #needs to be the max ts
+        send_message('new_data', message_body)
+
         return 'Thank you for your data'
 
 api.add_resource(HealthCheck, '/healthcheck')
