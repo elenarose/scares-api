@@ -13,9 +13,18 @@ class state_getter(object):
                                       host="localhost",
                                       port="5432")
 
-    def get_state(self, user_id, state):
-        curr_state = json.loads(state)	
-        return "{} is feeling {} at {}".format(user_id, curr_state['GetSensorValue'][0], curr_state['GetSensorValue'][1])
+    def get_user_state(self, user_id):
+        cur = self._conn.cursor()
+        res = cur.execute(
+            """
+            SELECT user_state
+            FROM user_data
+            WHERE user_id = (%s) AND time = (%s)
+            RETURNING user_state
+            """
+            , (user_id), )
+        self._conn.commit()
+        return res
 
     def create_user(self, username,password,email):
         cur = self._conn.cursor()

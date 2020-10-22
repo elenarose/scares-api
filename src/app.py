@@ -1,6 +1,7 @@
 from flask import Flask, request, Response
 from flask_restful import Resource, Api, reqparse
 from model.model import *
+from datetime import datetime
 
 
 app = Flask(__name__)
@@ -23,8 +24,8 @@ class get_data(Resource):
                             type=int,
                             required=True,
                             help='We need a user_id to fetch data')
-        parser.add_argument('state',
-                            type=str,
+        parser.add_argument('time',
+                            type=datetime.time,
                             required=True,
                             help='Time of requested state')
 
@@ -36,7 +37,7 @@ class get_data(Resource):
         """
 
         args = self.parser.parse_args()
-        result = model.get_state(args.user_id, args.state)
+        result = model.get_user_state(args.user_id, args.time)
         return result
 
 class post_user(Resource):
