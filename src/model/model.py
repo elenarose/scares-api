@@ -29,9 +29,9 @@ class state_getter(object):
     def create_user(self, username,password,email):
         cur = self._conn.cursor()
         res = cur.execute("""
-                    INSERT INTO users_table (username,password,email) VALUES (%s,%s,%s)
-                    RETURNING id"""
-                    , (username,password,email))
+                          INSERT INTO users_table (username,password,email) VALUES (%s,%s,%s)
+                          RETURNING id
+                          """, (username,password,email))
         self._conn.commit()
         return res
 
@@ -41,3 +41,11 @@ class state_getter(object):
             cur.execute("INSERT INTO raw_data VALUES (%s,%s,%s)", (user_id, values[i], times[i]))
 
         self._conn.commit()
+
+    def get_gsr_values(self, user_id, start_time, end_time):
+        cur = self._conn.cursor()
+        res = cur.execute("""
+                          SELECT * FROM raw_data WHERE user_id = %s AND ts > %s AND ts < %s
+                          """, user_id, start_time, end_time)
+        self._conn.commit()
+        return res

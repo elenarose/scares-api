@@ -2,6 +2,7 @@ from flask import Flask, request, Response
 from flask_restful import Resource, Api, reqparse
 from model.model import *
 from datetime import datetime
+from sqs_lib import send_message
 
 
 app = Flask(__name__)
@@ -63,7 +64,15 @@ class post_data(Resource):
                             type=int,
                             required=True,
                             help='We need to know the user_id of who this data belongs to')
+        parser.add_argument('value',
+	                    type=float,
+			    required=False,
+			    help='We need data to post!')
 
+        parser.add_argument('time',
+	                    type=int,
+			    required=False,
+			    help='we need a time')
         self.parser = parser
 
     def post(self):
@@ -71,11 +80,18 @@ class post_data(Resource):
         receive raw data for a user
         :return: Status 200 if got data okay
         """
-
         args = self.parser.parse_args()
-        body = request.get_json()
+        #body = request.get_json()
+        gsr_value = args.value
+        time = args.time
+        model.insert_gsr_values(args.user_id, time, gsr_value)
+	#model.insert_gsr_values(args.user_id, body['timestamps'], body['gsr_values'])
 
-        model.insert_gsr_values(args.user_id, body['timestamps'], body['gsr_values'])
+        message_body = {'user_id': args.user_id, 'ts': time}
+        #message_body = {'user_id': args.user_id, 'ts': body['timestamps'][0]} #needs to be the max ts
+        send_message('scares', message_body)
+	#send_message('scares', message_body)
+
         return 'Thank you for your data'
 
 api.add_resource(HealthCheck, '/healthcheck')

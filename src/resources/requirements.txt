@@ -4,3 +4,4 @@ flask
 flask-restful
 psycopg2-binary
 Flask-Migrate
+boto3
