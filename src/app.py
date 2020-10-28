@@ -1,6 +1,7 @@
 from flask import Flask, request, Response
 from flask_restful import Resource, Api, reqparse
 from model.model import *
+from sqs_lib import send_message
 
 
 app = Flask(__name__)
@@ -75,6 +76,10 @@ class post_data(Resource):
         body = request.get_json()
 
         model.insert_gsr_values(args.user_id, body['timestamps'], body['gsr_values'])
+
+        message_body = {'user_id': args.user_id, 'ts': body['timestamps'][0]} #needs to be the max ts
+        send_message('scares', message_body)
+
         return 'Thank you for your data'
 
 api.add_resource(HealthCheck, '/healthcheck')
