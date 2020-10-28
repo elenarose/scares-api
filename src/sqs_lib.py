@@ -1,6 +1,7 @@
 import boto3
 from botocore.exceptions import ClientError
 sqs = boto3.resource('sqs')
+import json
 
 #Code pulled from AWS Documentation
 
@@ -33,8 +34,9 @@ def send_message(queue_name, message_body, message_attributes=None):
     queue = get_queue(queue_name)
 
     try:
+        message_body_str = json.dumps(message_body)
         response = queue.send_message(
-            MessageBody=message_body,
+            MessageBody=message_body_str,
             MessageAttributes=message_attributes
         )
     except ClientError as error:

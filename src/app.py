@@ -78,7 +78,7 @@ class post_data(Resource):
         model.insert_gsr_values(args.user_id, body['timestamps'], body['gsr_values'])
 
         message_body = {'user_id': args.user_id, 'ts': body['timestamps'][0]} #needs to be the max ts
-        send_message('new_data', message_body)
+        send_message('scares', message_body)
 
         return 'Thank you for your data'
 
