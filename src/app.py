@@ -2,12 +2,17 @@ from flask import Flask, request, Response
 from flask_restful import Resource, Api, reqparse
 from model.model import *
 from sqs_lib import send_message
-
+from config import Config
+##from loguru import logger
 
 app = Flask(__name__)
 api = Api(app)
 
 model = state_getter()
+
+def auth_check(request):
+    token = request.headers.get('SCARES_AUTH')
+    return token is None or token != Config.AUTH_TOKEN
 
 class HealthCheck(Resource):
 
@@ -35,6 +40,8 @@ class get_data(Resource):
         """
         :return: state of user
         """
+        if auth_check(request):
+            return {'status':'unauthorized'}, 401
 
         args = self.parser.parse_args()
         result = model.get_state(args.user_id, args.time)
@@ -50,7 +57,11 @@ class post_user(Resource):
         create a new user
         :return: the user
         """
+        if auth_check(request):
+            return {'status':'unauthorized'}, 401
+
         body = request.get_json()
+
         return model.create_user(body['username'],body['password'],body['email'])
 
 class post_data(Resource):
@@ -71,6 +82,8 @@ class post_data(Resource):
         receive raw data for a user
         :return: Status 200 if got data okay
         """
+        if auth_check(request):
+            return {'status':'unauthorized'}, 401
 
         args = self.parser.parse_args()
         body = request.get_json()

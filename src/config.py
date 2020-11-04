@@ -8,3 +8,5 @@ class Config:
     PG_PASSWORD = environ.get('DATABASE_PASSWORD','postgres')
     PG_PORT = environ.get('DATABASE_PORT','5432')
     PG_NAME = environ.get('DATABASE_NAME','scares')
+
+    AUTH_TOKEN = environ.get('SCARES_AUTH')

@@ -38,7 +38,12 @@ class Database:
         """Run a SQL query to update rows in a table."""
         self.connect()
         with self.conn.cursor() as cur:
-            res = cur.execute(query, params)
-            self.conn.commit()
-            cur.close()
-            return res
+            try:
+                res = cur.execute(query, params)
+            except psycopg2.DatabaseError as e:
+                logger.error(e)
+                res = "Something is not right with your request", 400
+            finally:
+                self.conn.commit()
+                cur.close()
+                return res
