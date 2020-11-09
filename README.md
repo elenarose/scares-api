@@ -9,6 +9,7 @@ $ pip3 install flask_restful
 $ pip3 install psycopg2-binary
 $ pip3 install Flask-Migrate
 $ pip3 install boto3
+$ pip3 install loguru
 ```
 
 ### Running Postgres Locally
