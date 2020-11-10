@@ -4,12 +4,7 @@ An API for the Capstone Project SCARES
 ### Dependencies
 Install dependencies
 ```
-$ pip3 install flask
-$ pip3 install flask_restful
-$ pip3 install psycopg2-binary
-$ pip3 install Flask-Migrate
-$ pip3 install boto3
-$ pip3 install loguru
+$ pip install -r requirements.txt
 ```
 
 ### Running Postgres Locally
