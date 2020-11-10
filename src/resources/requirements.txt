@@ -1,9 +1,0 @@
-#run with 'pip install -r requirements.txt'
-
-flask
-flask-restful
-psycopg2-binary
-Flask-Migrate
-psycopg2-binary
-boto3
-loguru

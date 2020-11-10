@@ -1,14 +1,14 @@
 from flask import Flask, request, Response
 from flask_restful import Resource, Api, reqparse
-from model.model import *
-from sqs_lib import send_message
-from config import Config
+from src.model import model
+from src.sqs_lib import send_message
+from src.config import Config
 ##from loguru import logger
 
-app = Flask(__name__)
-api = Api(app)
+application = Flask(__name__)
+api = Api(application)
 
-model = state_getter()
+getter = model.state_getter()
 
 def auth_check(request):
     token = request.headers.get('SCARES_AUTH')
@@ -44,7 +44,7 @@ class get_data(Resource):
             return {'status':'unauthorized'}, 401
 
         args = self.parser.parse_args()
-        result = model.get_state(args.user_id, args.time)
+        result = getter.get_state(args.user_id, args.time)
         return result
 
 class post_user(Resource):
@@ -62,7 +62,7 @@ class post_user(Resource):
 
         body = request.get_json()
 
-        return model.create_user(body['username'],body['password'],body['email'])
+        return getter.create_user(body['username'],body['password'],body['email'])
 
 class post_data(Resource):
     def __init__(self):
@@ -88,7 +88,7 @@ class post_data(Resource):
         args = self.parser.parse_args()
         body = request.get_json()
 
-        model.insert_gsr_values(args.user_id, body['timestamps'], body['gsr_values'])
+        getter.insert_gsr_values(args.user_id, body['timestamps'], body['gsr_values'])
 
         message_body = {'user_id': args.user_id, 'ts': body['timestamps'][0]} #needs to be the max ts
         send_message('scares', message_body)
@@ -101,4 +101,5 @@ api.add_resource(post_data, '/data')
 api.add_resource(post_user, '/user')
 
 if __name__ == '__main__':
-    app.run(host='localhost', port='8080')
+    application.debug = True
+    application.run()

@@ -1,8 +1,6 @@
-from model.stress_state import stress_states
-import sys
-sys.path.append("..")
-from database import Database
-from config import Config
+from .stress_state import stress_states
+from ..database import Database
+from ..config import Config
 
 class state_getter(object):
 
