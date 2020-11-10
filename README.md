@@ -27,14 +27,14 @@ Then use DataGrip (or your preferred Postgres GUI) to view to the database.
 
 # API Documentation
 Currently hosted at `scares-api-dev.us-east-1.elasticbeanstalk.com`
-###GET /healthcheck
+### GET /healthcheck
 Returns 200
 
-###GET /getdata
+### GET /getdata
 Returns the processed data for a certain user and time.
 Request path parameters required: `user_id` and `time`
 
-###POST /user
+### POST /user
 Creates a new user entry. 
 Body:
 ```
@@ -44,7 +44,7 @@ Body:
     "email": "mailymail@northwestern.edu"
 }
 ```
-###POST /data
+### POST /data
 Creates new raw gsr reading entries.
 Request path parameters required: `user_id`
 
