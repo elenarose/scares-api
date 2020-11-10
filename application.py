@@ -12,7 +12,6 @@ getter = model.state_getter()
 
 def auth_check(request):
     token = request.headers.get('Authorization')
-    print(token)
     return token is None or token != Config.AUTH_TOKEN
 
 class HealthCheck(Resource):
