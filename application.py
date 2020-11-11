@@ -30,7 +30,6 @@ class get_data(Resource):
                             required=True,
                             help='We need a user_id to fetch data')
         parser.add_argument('time',
-                            type=int,
                             required=True,
                             help='Time of requested state')
 

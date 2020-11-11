@@ -29,10 +29,15 @@ class Database:
         """Run a SQL query to select rows from table."""
         self.connect()
         with self.conn.cursor() as cur:
-            cur.execute(query, params)
-            records = [row for row in cur.fetchall()]
-            cur.close()
-            return records
+            try:
+                cur.execute(query, params)
+                records = [row for row in cur.fetchall()]
+                cur.close()
+                return records
+            except Exception as e:
+                logger.error(e)
+                cur.close()
+                return 400
 
     def update_rows(self, query, params = []):
         """Run a SQL query to update rows in a table."""
