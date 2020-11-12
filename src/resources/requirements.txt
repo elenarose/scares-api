@@ -5,3 +5,5 @@ flask-restful
 psycopg2-binary
 Flask-Migrate
 boto3
+requests
+json
