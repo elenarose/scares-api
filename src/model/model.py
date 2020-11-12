@@ -1,5 +1,6 @@
-import psycopg2
-from model.stress_state import stress_states
+from .stress_state import stress_states
+from ..database import Database
+from ..config import Config
 
 class state_getter(object):
 
@@ -7,11 +8,7 @@ class state_getter(object):
         """
         init
         """
-        self._conn = psycopg2.connect(dbname="scares",
-                                      user="postgres",
-                                      password="postgres",
-                                      host="localhost",
-                                      port="5432")
+        self._database = Database(Config)
 
     def get_user_state(self, user_id):
         cur = self._conn.cursor()
@@ -27,25 +24,13 @@ class state_getter(object):
         return res
 
     def create_user(self, username,password,email):
-        cur = self._conn.cursor()
-        res = cur.execute("""
-                          INSERT INTO users_table (username,password,email) VALUES (%s,%s,%s)
-                          RETURNING id
-                          """, (username,password,email))
-        self._conn.commit()
+        res = self._database.update_rows("INSERT INTO users_table (username,password,email) VALUES (%s,%s,%s) RETURNING id", [username,password,email])
         return res
 
     def insert_gsr_values(self, user_id, values, times):
-        cur = self._conn.cursor()
         for i in range(len(values)):
-            cur.execute("INSERT INTO raw_data VALUES (%s,%s,%s)", (user_id, values[i], times[i]))
-
-        self._conn.commit()
+            self._database.update_rows("INSERT INTO raw_data VALUES (%s,%s,%s)", [user_id, values[i], times[i]])
 
     def get_gsr_values(self, user_id, start_time, end_time):
-        cur = self._conn.cursor()
-        res = cur.execute("""
-                          SELECT * FROM raw_data WHERE user_id = %s AND ts > %s AND ts < %s
-                          """, user_id, start_time, end_time)
-        self._conn.commit()
+        res = self._database.select_rows("SELECT * FROM raw_data WHERE user_id = %s AND ts > %s AND ts < %s", [user_id, start_time, end_time])
         return res

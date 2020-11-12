@@ -1,14 +1,18 @@
 from flask import Flask, request, Response
 from flask_restful import Resource, Api, reqparse
-from model.model import *
-from datetime import datetime
-from sqs_lib import send_message
+from src.model import model
+from src.sqs_lib import send_message
+from src.config import Config
+##from loguru import logger
 
+application = Flask(__name__)
+api = Api(application)
 
-app = Flask(__name__)
-api = Api(app)
+getter = model.state_getter()
 
-model = state_getter()
+def auth_check(request):
+    token = request.headers.get('Authorization')
+    return token is None or token != Config.AUTH_TOKEN
 
 class HealthCheck(Resource):
 
@@ -26,7 +30,7 @@ class get_data(Resource):
                             required=True,
                             help='We need a user_id to fetch data')
         parser.add_argument('time',
-                            type=datetime.time,
+                            type=int,
                             required=True,
                             help='Time of requested state')
 
@@ -36,9 +40,11 @@ class get_data(Resource):
         """
         :return: state of user
         """
+        if auth_check(request):
+            return {'status':'unauthorized'}, 401
 
         args = self.parser.parse_args()
-        result = model.get_user_state(args.user_id, args.time)
+        result = getter.get_state(args.user_id, args.time)
         return result
 
 class post_user(Resource):
@@ -51,8 +57,12 @@ class post_user(Resource):
         create a new user
         :return: the user
         """
+        if auth_check(request):
+            return {'status':'unauthorized'}, 401
+
         body = request.get_json()
-        return model.create_user(body['username'],body['password'],body['email'])
+
+        return getter.create_user(body['username'],body['password'],body['email'])
 
 class post_data(Resource):
     def __init__(self):
@@ -64,15 +74,7 @@ class post_data(Resource):
                             type=int,
                             required=True,
                             help='We need to know the user_id of who this data belongs to')
-        parser.add_argument('value',
-	                    type=float,
-			    required=False,
-			    help='We need data to post!')
 
-        parser.add_argument('time',
-	                    type=int,
-			    required=False,
-			    help='we need a time')
         self.parser = parser
 
     def post(self):
@@ -80,17 +82,16 @@ class post_data(Resource):
         receive raw data for a user
         :return: Status 200 if got data okay
         """
-        args = self.parser.parse_args()
-        #body = request.get_json()
-        gsr_value = args.value
-        time = args.time
-        model.insert_gsr_values(args.user_id, time, gsr_value)
-	#model.insert_gsr_values(args.user_id, body['timestamps'], body['gsr_values'])
+        if auth_check(request):
+            return {'status':'unauthorized'}, 401
 
-        message_body = {'user_id': args.user_id, 'ts': time}
-        #message_body = {'user_id': args.user_id, 'ts': body['timestamps'][0]} #needs to be the max ts
+        args = self.parser.parse_args()
+        body = request.get_json()
+
+        getter.insert_gsr_values(args.user_id, body['timestamps'], body['gsr_values'])
+
+        message_body = {'user_id': args.user_id, 'ts': body['timestamps'][0]} #needs to be the max ts
         send_message('scares', message_body)
-	#send_message('scares', message_body)
 
         return 'Thank you for your data'
 
@@ -100,4 +101,5 @@ api.add_resource(post_data, '/data')
 api.add_resource(post_user, '/user')
 
 if __name__ == '__main__':
-    app.run(host='localhost', port='8080')
+    application.debug = True
+    application.run()
