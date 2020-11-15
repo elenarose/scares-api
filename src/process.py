@@ -3,7 +3,7 @@ import json
 from model.model import state_getter
 from gsr_fe import gsr_fe
 from loguru import logger
-
+from sqs_lib import receive_messages
 WINDOW_SIZE = 10
 
 def unpack_message(msg):
@@ -14,15 +14,19 @@ def run():
     max_msg_count = 1 #number of messages to pull from queue at a time
     while i < 1:
         #read messages from the sqs queue
-        messages = [1]#receive_messages('scares', max_msg_count, 2)
+        messages = receive_messages('scares', max_msg_count, 2)
         if len(messages) > 0:
             for msg in messages:
-                #body = unpack_message(msg)
-                raw_data = state_getter().get_gsr_values(2, "2020-10-19 10:27:49+02", "2020-10-19 10:27:59+02")
+                body = unpack_message(msg)
+                ts = body['ts']
+                user_id = body['user_id']
+                logger.info("Processing for user {} at time {}".format(user_id, ts))
+                raw_data = state_getter().get_gsr_values(user_id, ts)
+                logger.info(raw_data)
                 features = gsr_fe(raw_data)
                 logger.info(features)
-                #TODO do math with raw_data
-                # feature extraction and classification happens here for a segment of data
+                #TODO do math features
+                # classification happens here for a segment of data
 
                 #TODO
                 # write the result of classification to the database
