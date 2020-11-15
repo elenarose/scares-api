@@ -2,8 +2,9 @@
 # Capstone Fall 2020
 # GSR Feature Extraction
 
-# Import
+# Import Modules
 
+import math as m
 import numpy as np
 from scipy import signal as sig
 from cvxEDA import *
@@ -16,13 +17,8 @@ def gsr_fe(gsr):
     l_window = 10
 
     # Deconvolve GSR into Components
-
     scr, driver, scl, _,_,_,_ = cvxEDA(gsr, Ts)
-    scr(np.where(scr < 0)) = 0
 
-    scr = []
-    scl = []
-    driver = []
 
     # Extract Time Domain Features
     ScrMaxDeriv = np.amax(np.diff(scr)/Ts)
@@ -39,22 +35,18 @@ def gsr_fe(gsr):
     DriverNum = len(peak_ind)
 
     # Extract Frequency Domain Features
-    fft_gsr = np.fft.fft(gsr)/len(gsr)
-    fft_gsr = fft_gsr[range(int(len(gsr)/2))]
-    values = np.arange(int(len(gsr)/2))
-    timePeriod = len(gsr)/fs
+    Y = np.fft.fft(gsr)
+    P2 = np.abs(Y/len(gsr))
+    P1 = P2[0:m.floor(len(gsr)/2)+1]
+    P1[1:-1] = 2*P1[1:-1]
+    f = fs*np.arange(m.floor(len(gsr)/2)+1)/len(gsr);
 
-    f = values/timePeriod
-    f_pow = np.square(np.absolute(fft_gsr))
 
-    min_idx = np.where(f >= 0.2)
-    min_idx = min_idx[0]
-    max_idx = np.where(f >= 1.5)
-    max_idx = max_idx[0]+1
+    idxmin = np.argmax(f >= 0.2)
+    idxmax = np.argmax(f >= 1.5)
+    Fpower = sum(P1[idxmin:(idxmax)])
 
-    f_pow = np.sum(f_pow[min_idx:max_idx])
-
-    features = [f_powm,ScrMaxDeriv,ScrAvgDeriv,ScrAvg,GsrStDev,GsrDRange,
-                SclMaxDeriv,SclAvgDeriv,DriverMax,DriverNum,f_pow]
-
+    # Ouput Features
+    features = [ScrMaxDeriv,ScrAvgDeriv,ScrAvg,GsrStDev,GsrDRange,
+                SclMaxDeriv,SclAvgDeriv,DriverMax,DriverNum,Fpower]
     return features
