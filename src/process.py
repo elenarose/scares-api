@@ -20,6 +20,7 @@ def run():
                 #body = unpack_message(msg)
                 raw_data = state_getter().get_gsr_values(2, "2020-10-19 10:27:49+02", "2020-10-19 10:27:59+02")
                 features = gsr_fe(raw_data)
+                logger.info(features)
                 #TODO do math with raw_data
                 # feature extraction and classification happens here for a segment of data
 

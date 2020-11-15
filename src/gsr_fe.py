@@ -7,7 +7,7 @@
 import math as m
 import numpy as np
 from scipy import signal as sig
-from cvxEDA import *
+from cvxEDA import cvxEDA
 
 def gsr_fe(gsr):
 
