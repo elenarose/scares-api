@@ -2,28 +2,42 @@ import json
 import time
 from datetime import datetime
 import requests
+import os
 
-def connect(device_id, address, port):
+def connect(device_id, neu_address, neu_port, user_id=1):
+
+    aws_address = 'http://scares-api-dev.us-east-1.elasticbeanstalk.com/data'
+    header = {'Authorization': 'E!&3F3ugu;Pvnc6E'}
+    user_param = {"user_id":user_id}
+
     while True:
 
-        try:
-            req = requests.get("http://{}:{}/NeuLogAPI?GetSensorValue:[GSR],[{}]".format(address, port, device_id))
+        for i in range(5):
 
-        except:
-            print("Not Connected to API...Trying Again...")
-            time.sleep(5)
-            continue
+            timestamps = []
+            gsr_values = []
 
-        value = json.loads(req.text)
-        value = value['GetSensorValue'][0]
+            try:
+                req = requests.get("http://{}:{}/NeuLogAPI?GetSensorValue:[GSR],[{}]".format(neu_address, neu_port, device_id))
 
-        now = datetime.now()
-        current_time = now.strftime("%H:%M:%S")
+            except:
+                print("Not Connected to API...Trying Again...")
+                time.sleep(5)
+                continue
 
-        post_call = "curl http://localhost:8080/data?\?user_id\={}\&value={}\&time={}".format(device_id, value, current_time)
-        os.system(post_call)
+            value = json.loads(req.text)
+            value = value['GetSensorValue'][0]
 
-        time.sleep(5)
+            now = datetime.now()
+            current_time = now.strftime("%Y-%m-%d %H:%M:%S+02")
+
+            timestamps.append(current_time)
+            gsr_values.append(value)
+
+            data_post = {"timestamps": timestamps, "gsr_values": gsr_values}
+
+        requests.post(aws_address, json=data_post, headers=header, params=user_param)
+
 
 if __name__ == '__main__':
 
