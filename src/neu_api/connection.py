@@ -10,12 +10,13 @@ def connect(device_id, neu_address, neu_port, user_id=1):
     header = {'Authorization': 'E!&3F3ugu;Pvnc6E'}
     user_param = {"user_id":user_id}
 
+
     while True:
 
-        for i in range(5):
+        timestamps = []
+        gsr_values = []
 
-            timestamps = []
-            gsr_values = []
+        for i in range(5):
 
             try:
                 req = requests.get("http://{}:{}/NeuLogAPI?GetSensorValue:[GSR],[{}]".format(neu_address, neu_port, device_id))
@@ -37,7 +38,7 @@ def connect(device_id, neu_address, neu_port, user_id=1):
             data_post = {"timestamps": timestamps, "gsr_values": gsr_values}
 
         requests.post(aws_address, json=data_post, headers=header, params=user_param)
-
+        #time.sleep(5)
 
 if __name__ == '__main__':
 
