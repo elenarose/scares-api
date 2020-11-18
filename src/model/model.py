@@ -11,8 +11,11 @@ class state_getter(object):
         self._database = Database(Config)
 
     def get_state(self, user_id, time):
-        if time > 5:
-            return "{} is feeling {}".format(user_id, stress_states.bad)
+        res = self._database.select_rows("SELECT state FROM processed_data WHERE user_id = %s ORDER BY abs(extract(epoch from (ts - timestamp %s))) LIMIT 1",
+                                        [user_id, time])
+        if res == 400:
+            return "Something is not right with your request", res
+        return "{} is feeling {}".format(user_id, res[0][0])
 
     def create_user(self, username,password,email):
         res = self._database.update_rows("INSERT INTO users_table (username,password,email) VALUES (%s,%s,%s) RETURNING id", [username,password,email])
