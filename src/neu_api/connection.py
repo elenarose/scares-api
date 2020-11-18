@@ -2,7 +2,6 @@ import json
 import time
 from datetime import datetime
 import requests
-import os
 
 def connect(device_id, neu_address, neu_port, user_id=1):
 
