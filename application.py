@@ -90,7 +90,7 @@ class post_data(Resource):
 
         getter.insert_gsr_values(args.user_id, body['timestamps'], body['gsr_values'])
 
-        message_body = {'user_id': args.user_id, 'ts': body['timestamps'][0]} #needs to be the max ts
+        message_body = {'user_id': args.user_id, 'ts': max(body['timestamps'])}
         send_message('scares', message_body)
 
         return 'Thank you for your data'
