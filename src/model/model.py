@@ -1,7 +1,6 @@
-from .stress_state import stress_states
-from ..database import Database
-from ..config import Config
-from loguru import logger
+from model.stress_state import stress_states
+from database import Database
+from config import Config
 
 class state_getter(object):
 
@@ -26,6 +25,6 @@ class state_getter(object):
         for i in range(len(values)):
             self._database.update_rows("INSERT INTO raw_data VALUES (%s,%s,%s)", [user_id, values[i], times[i]])
 
-    def get_gsr_values(self, user_id, start_time, end_time):
-        res = self._database.select_rows("SELECT * FROM raw_data WHERE user_id = %s AND ts > %s AND ts < %s", [user_id, start_time, end_time])
-        return res
+    def get_gsr_values(self, user_id, end_time):
+        res = self._database.select_rows("SELECT gsr_reading FROM raw_data WHERE user_id = %s AND ts > %s::timestamp - interval '10 seconds' AND ts < %s", [user_id, end_time, end_time])
+        return list(map(lambda x: x[0], res))

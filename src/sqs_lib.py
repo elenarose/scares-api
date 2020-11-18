@@ -2,6 +2,7 @@ import boto3
 from botocore.exceptions import ClientError
 sqs = boto3.resource('sqs')
 import json
+from loguru import logger
 
 #Code pulled from AWS Documentation
 
@@ -65,9 +66,9 @@ def receive_messages(queue_name, max_number, wait_time):
             WaitTimeSeconds=wait_time
         )
         for msg in messages:
-            print("Received message: %s: %s", msg.message_id, msg.body)
+            logger.info("Received message: {}: {}".format(msg.message_id, msg.body))
     except ClientError as error:
-        print("Couldn't receive messages from queue: %s", queue)
+        logger.info("Couldn't receive messages from queue: {}".format(queue))
         raise error
     else:
         return messages
