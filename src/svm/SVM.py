@@ -4,11 +4,11 @@
 # Created on: 10/4/20
 
 import pandas as pd
-from sklearn.cross_decomposition import CCA
-from sklearn.datasets import make_multilabel_classification
-from sklearn.metrics import confusion_matrix
-from sklearn.svm import SVC
-import numpy as np
+# from sklearn.cross_decomposition import CCA
+# from sklearn.datasets import make_multilabel_classification
+# from sklearn.metrics import confusion_matrix
+# from sklearn.svm import SVC
+# import numpy as np
 
 ################################################################################
 ################################################################################
@@ -17,7 +17,7 @@ import numpy as np
 
 ################################################################################
 ################################################################################
-stress_drivers = pd.read_csv('scare_features_10212020.csv')
+stress_drivers = pd.read_csv('./svm/scare_features_10212020.csv')
 
 data = stress_drivers.drop(['Stimuli'], axis =1).drop(['Filename'], axis = 1).drop(['Subject'], axis = 1).values
 target = stress_drivers['Stimuli'].values
@@ -87,8 +87,7 @@ y_pred_poly_gamma = classifier_poly_gamma.predict(X_test)
 def get_prediction(data):
     ynew = classifier_linear.predict(data)
     for i in range(len(ynew)):
-	    #print("Actual=%s Predicted=%s" % (target[i], ynew[i]))
-        print((ynew[i]))
+        return ynew[i]
 ################################################################################
 ################################################################################
 ################################################################################

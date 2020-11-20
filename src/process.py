@@ -4,6 +4,8 @@ from model.model import state_getter
 from gsr_fe import gsr_fe
 from loguru import logger
 from sqs_lib import receive_messages
+from svm.SVM import get_prediction
+import numpy as np
 WINDOW_SIZE = 10
 
 def unpack_message(msg):
@@ -21,15 +23,15 @@ def run():
                 ts = body['ts']
                 user_id = body['user_id']
                 logger.info("Processing for user {} at time {}".format(user_id, ts))
-                raw_data = state_getter().get_gsr_values(user_id, ts)
+                raw_data = state_getter().get_gsr_values(user_id, '2020-11-17 22:22:41+02')  # 2020-11-17 22:22:41+02
                 logger.info(raw_data)
                 features = gsr_fe(raw_data)
                 logger.info(features)
-                #TODO do math features
-                # classification happens here for a segment of data
-
+                prediction = get_prediction(np.array(features).reshape(1, -1))
+                logger.info(prediction)
                 #TODO
                 # write the result of classification to the database
+
 
                 #TODO
                 # delete the message so we don't read it twice
