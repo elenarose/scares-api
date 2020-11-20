@@ -94,7 +94,7 @@ class post_data(Resource):
 
         return 'Thank you for your data'
 
-api.add_resource(HealthCheck, '/healthcheck')
+api.add_resource(HealthCheck, '/')
 api.add_resource(get_data, '/getdata')
 api.add_resource(post_data, '/data')
 api.add_resource(post_user, '/user')
