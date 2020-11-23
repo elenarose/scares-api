@@ -1,10 +1,12 @@
 import boto3
 from botocore.exceptions import ClientError
+
 sqs = boto3.resource('sqs')
 import json
 from loguru import logger
 
-#Code pulled from AWS Documentation
+
+# Code pulled from AWS Documentation
 
 def get_queue(name):
     """
@@ -18,6 +20,7 @@ def get_queue(name):
         raise error
     else:
         return queue
+
 
 def send_message(queue_name, message_body, message_attributes=None):
     """
@@ -44,6 +47,7 @@ def send_message(queue_name, message_body, message_attributes=None):
         raise error
     else:
         return response
+
 
 def receive_messages(queue_name, max_number, wait_time):
     """
@@ -72,3 +76,22 @@ def receive_messages(queue_name, max_number, wait_time):
         raise error
     else:
         return messages
+
+
+def delete_message(message):
+    """
+    Delete a message from a queue. Clients must delete messages after they
+    are received and processed to remove them from the queue.
+
+    Usage is shown in usage_demo at the end of this module.
+
+    :param message: The message to delete. The message's queue URL is contained in
+                    the message's metadata.
+    :return: None
+    """
+    try:
+        message.delete()
+        logger.info("Deleted message: {}".format(message.message_id))
+    except ClientError as error:
+        logger.exception("Couldn't delete message: {}".format(message.message_id))
+        raise error
