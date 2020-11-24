@@ -1,5 +1,5 @@
-from database import Database
-from config import Config
+from src.database import Database
+from src.config import Config
 
 
 class state_getter(object):
