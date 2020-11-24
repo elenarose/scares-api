@@ -16,7 +16,7 @@ class state_getter(object):
             [user_id, time])
         if res == 400:
             return "Something is not right with your request", res
-        return "{} is feeling {}".format(user_id, res[0][0])
+        return {'user': user_id, 'time': time, 'state': res[0][0]}
 
     def create_user(self, username, password, email):
         res = self._database.update_rows(
