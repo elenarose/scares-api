@@ -1,4 +1,5 @@
 from flask import Flask, request
+from flask_cors import CORS
 from flask_restful import Resource, Api, reqparse
 from src.model import model
 from src.sqs_lib import send_message
@@ -7,6 +8,7 @@ from src.config import Config
 
 application = Flask(__name__)
 api = Api(application)
+CORS(application)
 
 getter = model.state_getter()
 
