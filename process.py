@@ -1,10 +1,10 @@
 from time import sleep
 import json
-from model.model import state_getter
-from gsr_fe import gsr_fe
+from src.model.model import state_getter
+from src.gsr_fe import gsr_fe
 from loguru import logger
-from sqs_lib import receive_messages, delete_message
-from svm.SVM import get_prediction
+from src.sqs_lib import receive_messages, delete_message
+from src.svm.SVM import get_prediction
 import numpy as np
 
 WINDOW_SIZE = 10

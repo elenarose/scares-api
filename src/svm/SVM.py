@@ -17,7 +17,7 @@ import pandas as pd
 
 ################################################################################
 ################################################################################
-stress_drivers = pd.read_csv('./svm/scare_features_10212020.csv')
+stress_drivers = pd.read_csv('./src/svm/scare_features_10212020.csv')
 
 data = stress_drivers.drop(['Stimuli'], axis =1).drop(['Filename'], axis = 1).drop(['Subject'], axis = 1).values
 target = stress_drivers['Stimuli'].values
